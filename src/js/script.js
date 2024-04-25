@@ -12,8 +12,15 @@ const per_page = 40;
 let page = 1;
 let isLoading = false;
 let totalHits = 0;
-let endResultShown = false;
-let endOfResult = false;
+let throttleWait = false;
+
+const lightbox = new SimpleLightbox('.photo-card a', {
+  captionSelector: 'img',
+  captionType: 'attr',
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});
 
 frm.addEventListener('submit', e => {
   e.preventDefault();
@@ -23,7 +30,6 @@ frm.addEventListener('submit', e => {
 function reset() {
   page = 1;
   endResultShown = false;
-  endOfResult = false;
   clearGallery();
 }
 
@@ -52,13 +58,7 @@ async function fetchImages() {
         loader.style.display = 'none';
         data.hits.map(createMarkup);
         page++;
-        new SimpleLightbox('.photo-card a', {
-          captionSelector: 'img',
-          captionType: 'attr',
-          captionsData: 'alt',
-          captionPosition: 'bottom',
-          captionDelay: 250,
-        });
+        lightbox.refresh();
         resolve(data.totalHits);
       })
       .catch(e => {
@@ -125,7 +125,7 @@ function handleScroll() {
   const documentHeight = document.documentElement.scrollHeight;
 
   if (scrollTop + windowHeight >= documentHeight - 100 && !isLoading) {
-    endOfResult = (page - 1) * per_page >= totalHits;
+    const endOfResult = (page - 1) * per_page >= totalHits;
     if (endOfResult) {
       Notify.failure(
         "We're sorry, but you've reached the end of search results."
@@ -138,11 +138,16 @@ function handleScroll() {
 
     fetchImages().then(() => {
       scroll();
+      new SimpleLightbox('.photo-card a', {
+        captionSelector: 'img',
+        captionType: 'attr',
+        captionsData: 'alt',
+        captionPosition: 'bottom',
+        captionDelay: 250,
+      });
     });
   }
 }
-
-var throttleWait;
 
 const throttle = (callback, time) => {
   if (throttleWait) return;
