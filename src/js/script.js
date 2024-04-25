@@ -29,7 +29,6 @@ frm.addEventListener('submit', e => {
 
 function reset() {
   page = 1;
-  endResultShown = false;
   clearGallery();
 }
 
