@@ -8,7 +8,7 @@ const searchQuery = document.querySelector('[name=searchQuery]');
 const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('.loader-container');
 
-const per_page = 160;
+const per_page = 40;
 let page = 1;
 let isLoading = false;
 let totalHits = 0;
